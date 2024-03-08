@@ -1,7 +1,5 @@
 "use client";
 
-import { submitIssue } from "@/actions/issue-report";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,8 +22,31 @@ import { Textarea } from "@/components/ui/textarea";
 import React from "react";
 
 export default function DemoReportAnIssue() {
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsSubmitting(true);
+    const formData = new FormData(event.currentTarget);
+    const data = Object.fromEntries(formData);
+
+    await fetch("/api/report-issue", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    setIsSubmitting(false);
+    event.currentTarget.reset();
+  };
+
   return (
-    <form className="grid place-items-center min-h-screen" action={submitIssue}>
+    <form
+      className="grid place-items-center min-h-screen"
+      onSubmit={handleSubmit}
+    >
       <Card className="w-full max-w-2xl">
         <CardHeader>
           <CardTitle>Report an issue</CardTitle>
